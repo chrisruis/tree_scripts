@@ -2,7 +2,7 @@
 #Uses the PopSizes and GroupSizes in a BEAST log file to identify if the relative genetic diversity increases
 #and the date of the increase if it does
 #Takes the .trees and .log files from BEAST
-#By default, expects output from BEAST2 in which the log file columns contain PopSizes and GroupSizes. If using BEAST1, set option -b to 1
+#By default, expects output from BEAST2 in which the log file columns contain PopSize and GroupSize. If using BEAST1, set option -b to 1
 #With BEAST1, columns in the log file are expected to contain popSize and groupSize
 #To run: python3 population_increase_distribution_BEAST.py -t tree_distribution.trees -l log_file.log -p minimum_percentage_increase -d latest_sample_date -o output_file_name.txt
 
@@ -101,8 +101,8 @@ if __name__ == "__main__":
     log = open(args.l).readlines()
     logFile = removeHeader(log)
 
-    outFile = open(args.o + ".txt", "w")
-    outFile.write("MCMC.state\tIncrease.date\n")
+    outFile = open(args.o, "w")
+    outFile.write("MCMC_state\tIncrease_date\n")
 
     #Identify the columns in the log file that correspond to the PopSizes and GroupSizes
     groupPositions = getGroupSizes(logFile, args.b)
@@ -114,7 +114,10 @@ if __name__ == "__main__":
     #Will be incremented with each tree
     logLine = 0
 
+    #Incremented with each tree
     j = 0
+    #Incremented with each tree with an increase in relative genetic diversity
+    k = 0
 
     #Iterate through the trees, identify the corresponding log line and determine if and when the relative genetic diversity increased
     with open(args.t) as fileobject:
@@ -144,6 +147,7 @@ if __name__ == "__main__":
                 basePopulation = float(populationSizes[0])
                 basePopulationIncrease = basePopulation + (basePopulation * (float(args.p)/float(100)))
 
+                #Will change away from None if there is an increase within the current MCMC step
                 increaseDate = None
 
                 #Iterate through the adjacent population size pairs, check if the population has increased >= args.p above baseline
@@ -152,16 +156,20 @@ if __name__ == "__main__":
                     if float(populationSizes[populationSize]) > basePopulationIncrease:
                         #Check if the increase occurred in the first group, if it does use the number of nodes in the first group to identify the increase date
                         if populationSize == 1:
-                            nodeNumber = groupSizes[0]
+                            nodeNumber = int(float(groupSizes[0]))
                         #Sum the nodes up to the increase to identify the increase date
                         else:
-                            nodeNumber = sum([int(k) for k in groupSizes[0:(populationSize+1)]])
-                        increaseDate = nodeHeight[int(nodeNumber) - 1]
+                            nodeNumber = sum([int(float(k)) for k in groupSizes[:populationSize]])
+                        increaseDate = nodeHeight[int(nodeNumber)]
                         break
                 
                 if increaseDate:
                     outFile.write(MCMCState + "\t" + str(increaseDate) + "\n")
+                    k += 1
 
                 logLine += 1
+    
+    print("Proportion of trees with an inferred increase in relative genetic diversity of " +
+        args.p + "% above baseline (0.0 is none, 1.0 is all trees): " + str(float(k)/float(j)))
     
     outFile.close()

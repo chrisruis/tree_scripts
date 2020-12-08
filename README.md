@@ -4,6 +4,8 @@ Scripts to extract information from trees and tree distributions
 ## population_increase_distribution_BEAST.py
 Calculates a distribution of increase in relative genetic diversity from a posterior distribution
 
+This uses information within the Bayesian skyline population model parameters and will not work for other population models
+
 Takes the .trees and .log files from BEAST. Identifies the first increase in relative genetic diversity from the PopSizes columns in the log file and identifies the date of this increase using the corresponding number of nodes in the GroupSizes columns and the node heights in the respective tree
 
 Prints the proportion of trees in the posterior distribution that support an increase in relative genetic diversity. Writes the date of the first increase in relative genetic diversity for each MCMC step in which an increase is inferred
