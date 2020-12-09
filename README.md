@@ -1,6 +1,23 @@
 # tree_scripts
 Scripts to extract information from trees and tree distributions
 
+## bootstrap_TempEst_rttd_date.R
+Calculates the significance of a collection date vs root-to-tip correlation using bootstrapping
+
+Before running this script, import the tree into TempEst, set the best fitting root if needed and use "Export Data" to save a text file containing sample collection dates and root-to-tip distances. This script runs on this text file
+
+The correlation between sample collection date and root-to-tip distance is calculated with the real sample collection dates. The significance of this correlation is calculated by randomly assigning the dates to tips and recalculating the correlation a given number of times. The proportion of these randomisations that result in a correlation at least as strong as with the real data is reported as the p-value
+
+This script takes the text file from TempEst and the number of bootstraps to carried out. 1000 bootstraps is recommended. The script prints the R squared correlation with the real dates and the p-value on this correlation
+
+To run:
+
+RScript bootstrap_TempEst_rttd_date.R TempEst_text_file.txt number_of_bootstraps
+
+E.g.
+
+RScript bootstrap_TempEst_rttd_date.R rttd_date.txt 1000
+
 ## population_increase_distribution_BEAST.py
 Calculates a distribution of increase in relative genetic diversity from a posterior distribution
 
