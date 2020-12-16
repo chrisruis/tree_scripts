@@ -53,3 +53,7 @@ By default, looks for an increase in relative genetic diversity. To instead look
 To convert node heights in the tree to dates, the date of the latest sequence in the tree needs to be supplied in decimal format (e.g. 2015.54) with -d
 
 By default, the script expects the log file to be in BEAST2 format, in which case the PopSize and GroupSize column names should contain PopSize and GroupSize, respectively. This will not be the case with BEAST1 output. If using BEAST1 files, use option -b 1 which will switch so the script expects the PopSize and GroupSize columns to contain popSize and groupSize, respectively
+
+To run:
+
+python3 population_change_support_BEAST.py -t BEAST.trees -l BEAST.log -d latest_sample_date -w window_start window_end

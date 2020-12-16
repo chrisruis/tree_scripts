@@ -107,7 +107,6 @@ if __name__ == "__main__":
     parser.add_argument("-d", help = "Date of latest sample as decimal, e.g. 2015.54")
     parser.add_argument("-b", help = "BEAST version used. Can either be 1 or 2, default is 2", default = "2")
     parser.add_argument("-n", help = "Print update every nth tree. Default is 1000", default="1000")
-    parser.add_argument("-o", help = "Output file name")
     args = parser.parse_args()
 
     #Import the log file and remove its header
