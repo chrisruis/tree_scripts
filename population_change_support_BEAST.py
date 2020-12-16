@@ -159,13 +159,13 @@ if __name__ == "__main__":
                 populationSizes = [logTree.strip().split("\t")[i] for i in populationPositions][::-1]
 
                 #Will change away from None if there is an increase within the window in the current MCMC step
-                increaseDate = None
+                changeDate = None
                 basePopulation = None
 
                 #Calculate the relative genetic diversity at the start of the window of interest
                 for i, groupSize in enumerate(groupSizes):
                     #Check if the end of the current group of nodes is in the window, the first group that is will be the base population
-                    if float(nodeHeight[sum(int(a) for a in groupSizes[:(i + 1)])]) >= windowStart:
+                    if float(nodeHeight[sum(int(float(a)) for a in groupSizes[:(i + 1)])]) >= windowStart:
                         startGroup = i
                         basePopulation = float(populationSizes[i])
                         basePopulationIncrease = basePopulation + (basePopulation * (float(args.p)/float(100)))
@@ -174,19 +174,23 @@ if __name__ == "__main__":
                 
                 #Check if the tree spans the window
                 if basePopulation:
+                    #The population changes within the window of interest if its first node is within the window
                     #Iterate through the remaining groups, check if they start in the window, if they do check if they change by the required amount
-                    for eachGroup in groupSizes[startGroup:]:
+                    for i, eachGroup in enumerate(groupSizes[(startGroup + 1):]):
+                        #The first node in the current window is the sum of the nodes in the previous windows
                         #Check if the switch is within the window of interest
-                        if float(nodeHeight[sum(int(a) for a in groupSizes[:(i + 1)])]) <= windowEnd:
+                        if float(nodeHeight[sum(int(float(a)) for a in groupSizes[:(startGroup + i + 1)])]) <= windowEnd:
                             #Check if the group has the required population change
                             if args.decrease:
-                                if float(populationSizes[i]) < basePopulationIncrease:
-                                    k += 1
+                                if float(populationSizes[startGroup + i + 1]) < basePopulationDecrease:
+                                    changeDate = "Yes"
                             else:
-                                if float(populationSizes[i]) < basePopulationIncrease:
-                                    k += 1
-                        else:
-                            break
+                                if float(populationSizes[startGroup + i + 1]) > basePopulationIncrease:
+                                    changeDate = "Yes"
+                
+                #Check if there was an increase/decrease in the window of interest within this MCMC step
+                if changeDate == "Yes":
+                    k += 1
 
                 logLine += 1
     
