@@ -36,3 +36,20 @@ By default, the script expects the log file to be in BEAST2 format, in which cas
 To run:
 
 python3 population_increase_distribution_BEAST.py -t BEAST.trees -l BEAST.log -d latest_sample_date -o output_file_name.txt
+
+## population_change_support_BEAST.py
+Calculates the proportion of sampled MCMC steps that support a change in relative genetic diversity within a given time window
+
+This uses information within the Bayesian skyline population model parameters and will not work for other population models
+
+Takes the .trees and .log files from BEAST and a window of interest. Use the dates in the tree and the GroupSizes in the log file to identify dates at which the relative genetic diversity changes. For each tree, checks if there is a change in relative genetic diversity within the window based on these dates and the PopSizes. This change is defined relative to the PopSize at the start of the window of interest
+
+Prints the proportion of trees in the posterior distribution that support a change in relative genetic diversity within the window of interest
+
+Supply the window of interest with -w. This takes 2 decimal numbers separated by a space, e.g. using "-w 1990 2000" will test for a change between 1990 and 2000
+
+By default, looks for an increase in relative genetic diversity. To instead look for a decrease use --decrease
+
+To convert node heights in the tree to dates, the date of the latest sequence in the tree needs to be supplied in decimal format (e.g. 2015.54) with -d
+
+By default, the script expects the log file to be in BEAST2 format, in which case the PopSize and GroupSize column names should contain PopSize and GroupSize, respectively. This will not be the case with BEAST1 output. If using BEAST1 files, use option -b 1 which will switch so the script expects the PopSize and GroupSize columns to contain popSize and groupSize, respectively
