@@ -27,6 +27,19 @@ def removeHeader(logFile):
     
     return(lines)
 
+#Extract the header from a trees file
+def getTreesHeader(treesFile):
+    headerLines = list()
+
+    with open(treesFile) as fileobject:
+        for line in fileobject:
+            if line.strip()[0:4] == "tree":
+                break
+            else:
+                headerLines.append(line)
+    
+    return(headerLines)
+
 #Extracts the trees from a .trees file
 def extractTrees(treesFile):
     lines = []
@@ -107,6 +120,9 @@ if __name__ == "__main__":
     parser.add_argument("-d", help = "Date of latest sample as decimal, e.g. 2015.54")
     parser.add_argument("-b", help = "BEAST version used. Can either be 1 or 2, default is 2", default = "2")
     parser.add_argument("-n", help = "Print update every nth tree. Default is 1000", default="1000")
+    parser.add_argument("-o", help = "Output file prefix. Default is to not output any files so if -o is not included, no files are saved. " + 
+                                    "If -o is included, the dates of population change, trees supporting the change and trees not supporting the " + 
+                                    "change are written", default = None)
     args = parser.parse_args()
 
     #Import the log file and remove its header
@@ -131,6 +147,18 @@ if __name__ == "__main__":
     j = 0
     #Incremented with each tree with an increase in relative genetic diversity
     k = 0
+
+    #Open output files
+    if args.o:
+        out_distribution = open(args.o + "_population_change_distribution.csv", "w")
+        out_distribution.write("MCMC_step,Date_of_change\n")
+        out_trees_s = open(args.o + "_trees_supporting.nex", "w")
+        out_trees_n = open(args.o + "_trees_not_supporting.nex", "w")
+    
+        #Extract the header from the trees file and write to the trees output files
+        treesHeader = getTreesHeader(args.t)
+        out_trees_s.write("".join(treesHeader))
+        out_trees_n.write("".join(treesHeader))
 
     #Iterate through the trees, identify the corresponding log line and determine if and when the relative genetic diversity increased
     with open(args.t) as fileobject:
@@ -171,6 +199,8 @@ if __name__ == "__main__":
                         basePopulationDecrease = basePopulation - (basePopulation * (float(args.p)/float(100)))
                         break
                 
+                print("MCMC " + MCMCState)
+                
                 #Check if the tree spans the window
                 if basePopulation:
                     #The population changes within the window of interest if its first node is within the window
@@ -182,15 +212,36 @@ if __name__ == "__main__":
                             #Check if the group has the required population change
                             if args.decrease:
                                 if float(populationSizes[startGroup + i + 1]) < basePopulationDecrease:
+                                    if args.o:
+                                        if not changeDate:
+                                            out_distribution.write(str(MCMCState) + "," + str(nodeHeight[sum(int(float(a)) for a in groupSizes[:(startGroup + i + 1)])]) + "\n")
                                     changeDate = "Yes"
                             else:
                                 if float(populationSizes[startGroup + i + 1]) > basePopulationIncrease:
+                                    if args.o:
+                                        if not changeDate:
+                                            out_distribution.write(str(MCMCState) + "," + str(nodeHeight[sum(int(float(a)) for a in groupSizes[:(startGroup + i + 1)])]) + "\n")
                                     changeDate = "Yes"
                 
                 #Check if there was an increase/decrease in the window of interest within this MCMC step
                 if changeDate == "Yes":
                     k += 1
 
+                    if args.o:
+                        #Write the tree to the supporting file
+                        out_trees_s.write(line)
+                else:
+                    if args.o:
+                        #Write the tree to the non-supporting file
+                        out_trees_n.write(line)
+
                 logLine += 1
     
     print("The proportion of trees with a population change in the required window is " + str(float(k)/float(j)))
+
+    if args.o:
+        out_trees_s.write("End;")
+        out_trees_n.write("End;")
+        out_distribution.close()
+        out_trees_s.close()
+        out_trees_n.close()
