@@ -2,7 +2,7 @@
 #Divides the tree into specified windows and calculates the relative genetic diversity in each window in each sampled step in the posterior
 #The start and end of the examined period are provided with -d1 and -d2, respectively, and -a specifies the number of windows in that range. Therefore
 #using -d1 1900 -d2 2000 -a 100 will split time in year long windows
-#To run: python calculate_bayesian_skyline.py -l LogFile.log -t TreesFile.trees -s LatestSampleDate -d1 EarliestDate -d2 LatestDate -a NumberOfIntervals -o OutputFile
+#To run: python calculate_bayesian_skyline.py -l BEAST.log -t BEAST.trees -s LatestSampleDate -d1 EarliestDate -d2 LatestDate -a NumberOfIntervals -o OutputFile
 
 from io import StringIO
 from Bio import Phylo as p

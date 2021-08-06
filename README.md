@@ -18,6 +18,17 @@ E.g.
 
 RScript bootstrap_TempEst_rttd_date.R rttd_date.txt 1000
 
+## calculate_bayesian_skyline.py
+Extracts a Bayesian skyline plot distribution from a BEAST posterior distribution
+
+Calculates the relative genetic diversity within each of a given set of time windows in each tree in a posterior distribution. The start and end dates of the time period to be examined are provided with -d1 and -d2, respectively, and the window length is provided with -a. Using -d1 1900 -d2 2000 -a 100 will calculate the relative genetic diversity for each year between 1900 and 2000
+
+Output is a single text file containing relative genetic diversity through time with intervals as columns and sampled MCMC steps as rows
+
+To run:
+
+python3 calculate_bayesian_skyline.py -l BEAST.log -t BEAST.trees -s latest_sample_date -d1 interval_start -d2 interval_end -a number_of_windows -o output_file.txt
+
 ## population_increase_distribution_BEAST.py
 Calculates a distribution of increase in relative genetic diversity from a posterior distribution
 
