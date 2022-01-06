@@ -29,6 +29,19 @@ To run:
 
 python3 calculate_bayesian_skyline.py -l BEAST.log -t BEAST.trees -s latest_sample_date -d1 interval_start -d2 interval_end -a number_of_windows -o output_file.txt
 
+## gene_presence_absence_tree.R
+Plots the presence absence of a gene from Panaroo next to a tree as a heatmap
+
+Takes a newick tree file and the gene_presence_absence.Rtab file from Panaroo. The sequence names in these 2 files must match
+
+The genes to be plotted are provided with -s. This is a text file with one gene per line and no header. The gene names must match those in gene_presence_absence.Rtab
+
+The output is a PDF file containing the tree next to a heatmap of gene presence absence. Presence in the heatmap is blue and absence is grey
+
+To run:
+
+RScript gene_presence_absence_tree.R -t tree.nwk -g gene_presence_absence.Rtab -s genes.txt -o gene_plot.pdf
+
 ## population_increase_distribution_BEAST.py
 Calculates a distribution of increase in relative genetic diversity from a posterior distribution
 
